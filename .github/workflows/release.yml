@@ -165,7 +165,8 @@ jobs:
       GOOS: ${{ matrix.goos }}
       GOARCH: ${{ matrix.goarch }}
       GOARM: ${{ matrix.goarm }}
-      CGO_ENABLED: 0
+      EXT: ${{ matrix.ext }}
+      CGO_ENABLED: 1
     steps:
       - name: Checkout codebase
         uses: actions/checkout@v3
@@ -198,23 +199,12 @@ jobs:
       - name: Build lib
         run: |
           mkdir -p build_assets
-          
-          go build -trimpath -tags with_gvisor,with_lwip -ldflags="-w -s" -buildmode=c-shared -o build_assets/hiddify_libclash 
-      - name: Build background Xray on Windows 
-        if: matrix.goos == 'windows'
-        run: |
-          go build -v -o build_assets/wxray.exe -trimpath -ldflags "-s -w -H windowsgui -buildid=" ./main
+          go build -trimpath -tags with_gvisor,with_lwip -ldflags="-w -s" -buildmode=c-shared -o build_assets/hiddify_libclash.$EXT 
     
       - name: Build Mips softfloat Xray
         if: matrix.goarch == 'mips' || matrix.goarch == 'mipsle'
         run: |
-          GOMIPS=softfloat go build -v -o build_assets/xray_softfloat -trimpath -ldflags "-s -w -buildid=" ./main
-
-      - name: Rename Windows Xray
-        if: matrix.goos == 'windows'
-        run: |
-          cd ./build_assets || exit 1
-          mv xray xray.exe
+          GOMIPS=softfloat go build -trimpath -tags with_gvisor,with_lwip -ldflags="-w -s" -buildmode=c-shared -o build_assets/hiddify_libclash_softfloat.$EXT 
 
       - name: Restore Cache
         uses: actions/cache/restore@v3
@@ -224,7 +214,7 @@ jobs:
 
       - name: Copy README.md & LICENSE
         run: |
-          mv -f resources/* build_assets
+          # mv -f resources/* build_assets
           cp ${GITHUB_WORKSPACE}/README.md ./build_assets/README.md
           cp ${GITHUB_WORKSPACE}/LICENSE ./build_assets/LICENSE
 
