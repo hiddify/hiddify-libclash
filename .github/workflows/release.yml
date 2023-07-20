@@ -1,253 +1,295 @@
-name: Build and Release
-
+name: Build
 on:
   workflow_dispatch:
-  release:
-    types: [published]
   push:
+    paths-ignore:
+      - "docs/**"
+      - "README.md"
+      - ".github/ISSUE_TEMPLATE/**"
     branches:
-      - main
-    paths:
-      - "**/*.go"
-      - "go.mod"
-      - "go.sum"
-      - ".github/workflows/*.yml"
-  pull_request:
-    types: [opened, synchronize, reopened]
-    paths:
-      - "**/*.go"
-      - "go.mod"
-      - "go.sum"
-      - ".github/workflows/*.yml"
+      - Alpha
+    tags:
+      - "v*"
+  pull_request_target:
+    branches:
+      - Alpha
+      
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+  
+env:
+  REGISTRY: docker.io
 jobs:
-  prepare:
+  Build:
+    permissions: write-all
     runs-on: ubuntu-latest
-    steps:
-      - name: Restore Cache
-        uses: actions/cache/restore@v3
-        with:
-          path: resources
-          key: xray-geodat-
-
-      - name: Update Geodat
-        id: update
-        uses: nick-fields/retry@v2
-        with:
-          timeout_minutes: 60
-          retry_wait_seconds: 60
-          max_attempts: 60
-          command: |
-            [ -d 'resources' ] || mkdir resources
-            LIST=('geoip geoip geoip' 'domain-list-community dlc geosite')
-            for i in "${LIST[@]}"
-            do
-              INFO=($(echo $i | awk 'BEGIN{FS=" ";OFS=" "} {print $1,$2,$3}'))
-              FILE_NAME="${INFO[2]}.dat"
-              echo -e "Verifying HASH key..."
-              HASH="$(curl -sL "https://raw.githubusercontent.com/v2fly/${INFO[0]}/release/${INFO[1]}.dat.sha256sum" | awk -F ' ' '{print $1}')"
-              if [ -s "./resources/${FILE_NAME}" ] && [ "$(sha256sum "./resources/${FILE_NAME}" | awk -F ' ' '{print $1}')" == "${HASH}" ]; then
-                  continue
-              else
-                  echo -e "Downloading https://raw.githubusercontent.com/v2fly/${INFO[0]}/release/${INFO[1]}.dat..."
-                  curl -L "https://raw.githubusercontent.com/v2fly/${INFO[0]}/release/${INFO[1]}.dat" -o ./resources/${FILE_NAME}
-                  echo -e "Verifying HASH key..."
-                  [ "$(sha256sum "./resources/${FILE_NAME}" | awk -F ' ' '{print $1}')" == "${HASH}" ] || { echo -e "The HASH key of ${FILE_NAME} does not match cloud one."; exit 1; }
-                  echo "unhit=true" >> $GITHUB_OUTPUT
-              fi
-            done
-
-      - name: Save Cache
-        uses: actions/cache/save@v3
-        if: ${{ steps.update.outputs.unhit }}
-        with:
-          path: resources
-          key: xray-geodat-${{ github.sha }}-${{ github.run_number }}
-
-  build:
-    needs: prepare
-    permissions:
-      contents: write
     strategy:
-      matrix:
-        # Include amd64 on all platforms.
-        goos: [windows, freebsd, openbsd, linux, dragonfly, darwin]
-        goarch: [amd64, 386]
-        ext: [so]
-        exclude:
-          # Exclude i386 on darwin and dragonfly.
-          - goarch: 386
-            goos: dragonfly
-          - goarch: 386
-            goos: darwin
-
-          - goos: darwin
-            ext: so
-          - goos: windows
-            ext: so
-
-        include:
-          # BEIGIN MacOS ARM64
-          - goos: darwin
-            goarch: arm64
-            ext: dylib
-          # END MacOS ARM64
-          # BEGIN Linux ARM 5 6 7
-          - goos: linux
-            goarch: arm
-            goarm: 7
-          - goos: linux
-            goarch: arm
-            goarm: 6
-          - goos: linux
-            goarch: arm
-            goarm: 5
-          # END Linux ARM 5 6 7
-          # BEGIN Android ARM 8
-          - goos: android
-            goarch: arm64
-          # END Android ARM 8
-          # Windows ARM
-          - goos: windows
-            goarch: arm64
-            ext: dll
-          - goos: windows
-            goarch: arm
-            goarm: 7
-            ext: dll
-          # BEGIN Other architectures
-          # BEGIN riscv64 & ARM64 & LOONG64
-          - goos: linux
-            goarch: arm64
-          - goos: linux
-            goarch: riscv64
-          - goos: linux
-            goarch: loong64
-          # END riscv64 & ARM64 & LOONG64
-          # BEGIN MIPS
-          - goos: linux
-            goarch: mips64
-          - goos: linux
-            goarch: mips64le
-          - goos: linux
-            goarch: mipsle
-          - goos: linux
-            goarch: mips
-          # END MIPS
-          # BEGIN PPC
-          - goos: linux
-            goarch: ppc64
-          - goos: linux
-            goarch: ppc64le
-          # END PPC
-          # BEGIN FreeBSD ARM
-          - goos: freebsd
-            goarch: arm64
-          - goos: freebsd
-            goarch: arm
-            goarm: 7
-          # END FreeBSD ARM
-          # BEGIN S390X
-          - goos: linux
-            goarch: s390x
-          # END S390X
-          # END Other architectures
-          # BEGIN OPENBSD ARM
-          - goos: openbsd
-            goarch: arm64
-          - goos: openbsd
-            goarch: arm
-            goarm: 7
-          # END OPENBSD ARM
       fail-fast: false
+      matrix:
+        job:
+          - {
+              type: "WithoutCGO",
+              target: "linux-amd64 linux-amd64-compatible",
+              id: "1",
+            }
+          - {
+              type: "WithoutCGO",
+              target: "linux-armv5 linux-armv6 linux-armv7",
+              id: "2",
+            }
+          - {
+              type: "WithoutCGO",
+              target: "linux-arm64 linux-mips64 linux-mips64le",
+              id: "3",
+            }
+          - {
+              type: "WithoutCGO",
+              target: "linux-mips-softfloat linux-mips-hardfloat linux-mipsle-softfloat linux-mipsle-hardfloat",
+              id: "4",
+            }
+          - { type: "WithoutCGO", target: "linux-386 linux-riscv64", id: "5" }
+          - {
+              type: "WithoutCGO",
+              target: "freebsd-386 freebsd-amd64 freebsd-arm64",
+              id: "6",
+            }
+          - {
+              type: "WithoutCGO",
+              target: "windows-amd64-compatible windows-amd64 windows-386",
+              id: "7",
+            }
+          - {
+              type: "WithoutCGO",
+              target: "windows-arm64 windows-arm32v7",
+              id: "8",
+            }
+          - {
+              type: "WithoutCGO",
+              target: "darwin-amd64 darwin-arm64 android-arm64",
+              id: "9",
+            }
+          - { type: "WithCGO", target: "windows/*", id: "1" }
+          - { type: "WithCGO", target: "linux/386", id: "2" }
+          - { type: "WithCGO", target: "linux/amd64", id: "3" }
+          - { type: "WithCGO", target: "linux/arm64,linux/riscv64", id: "4" }
+          - { type: "WithCGO", target: "linux/arm,", id: "5" }
+          - { type: "WithCGO", target: "linux/arm-6,linux/arm-7", id: "6" }
+          - { type: "WithCGO", target: "linux/mips,linux/mipsle", id: "7" }
+          - { type: "WithCGO", target: "linux/mips64", id: "8" }
+          - { type: "WithCGO", target: "linux/mips64le", id: "9" }
+          - { type: "WithCGO", target: "darwin-10.16/*", id: "10" }
+          - { type: "WithCGO", target: "android", id: "11" }
 
-    runs-on: ubuntu-latest
-    env:
-      GOOS: ${{ matrix.goos }}
-      GOARCH: ${{ matrix.goarch }}
-      GOARM: ${{ matrix.goarm }}
-      EXT: ${{ matrix.ext }}
-      CGO_ENABLED: 1
     steps:
-      - name: Checkout codebase
+      - name: Check out code into the Go module directory
         uses: actions/checkout@v3
 
-      - name: Show workflow information 
-        run: |
-          export _NAME=$(jq ".[\"$GOOS-$GOARCH$GOARM$GOMIPS\"].friendlyName" -r < .github/build/friendly-filenames.json)
-          echo "GOOS: $GOOS, GOARCH: $GOARCH, GOARM: $GOARM, GOMIPS: $GOMIPS, RELEASE_NAME: $_NAME"
-          echo "ASSET_NAME=$_NAME" >> $GITHUB_ENV
+      - name: Set variables
+        run: echo "VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        shell: bash
 
-      - name: Set up Go
+      - name: Set variables
+        if: ${{github.ref_name=='Alpha'}}
+        run: echo "VERSION=alpha-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Set variables
+        if: ${{github.ref_name=='Meta'}}
+        run: echo "VERSION=meta-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Set variables
+        if: ${{github.ref_name=='' || github.ref_type=='tag'}}
+        run: echo "VERSION=$(git describe --tags)" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Set ENV
+        run: |
+          sudo timedatectl set-timezone "Asia/Shanghai"
+          echo "NAME=hiddify_clashlib" >> $GITHUB_ENV
+          echo "REPO=${{ github.repository }}" >> $GITHUB_ENV
+          echo "ShortSHA=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_ENV
+          echo "BUILDTIME=$(date)" >> $GITHUB_ENV
+          echo "BRANCH=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Set ENV
+        run: |
+          echo "TAGS=with_gvisor,with_lwip" >> $GITHUB_ENV
+          echo "LDFLAGS= -w -s -buildid=" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Setup Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.20'
+          go-version: "1.20"
           check-latest: true
 
-      - name: Get project dependencies
-        run: go mod download
-      
-      - name: Replace Custom to Commit ID
-        if: github.event_name != 'release'
+      - name: Test
+        if: ${{ matrix.job.id=='1' && matrix.job.type=='WithoutCGO' }}
         run: |
-          ID=$(git rev-parse --short ${{ github.sha }})
-          if [ "${{ github.event_name }}" == 'pull_request' ]
-          then
-            ID=$(git rev-parse --short ${{ github.event.pull_request.head.sha }})
-          fi
-          # sed -i '/build/ s/Custom/'$ID'/' ./core/core.go
- 
-      - name: Build lib
-        run: |
-          mkdir -p build_assets
-          go build -trimpath -tags with_gvisor,with_lwip -ldflags="-w -s" -buildmode=c-shared -o build_assets/hiddify_libclash.$EXT 
-    
-      - name: Build Mips softfloat Xray
-        if: matrix.goarch == 'mips' || matrix.goarch == 'mipsle'
-        run: |
-          GOMIPS=softfloat go build -trimpath -tags with_gvisor,with_lwip -ldflags="-w -s" -buildmode=c-shared -o build_assets/hiddify_libclash_softfloat.$EXT 
+          go test ./...
 
-      - name: Restore Cache
-        uses: actions/cache/restore@v3
+      - name: Build WithoutCGO
+        if: ${{ matrix.job.type=='WithoutCGO' }}
+        env:
+          NAME: hiddify_clashlib
+          BINDIR: bin
+        run: make -j$(($(nproc) + 1)) ${{ matrix.job.target }}
+
+      - uses: nttld/setup-ndk@v1
+        if: ${{ matrix.job.type=='WithCGO' && matrix.job.target=='android' }}
+        id: setup-ndk
         with:
-          path: resources
-          key: xray-geodat-
+          ndk-version: r25b
+          add-to-path: false
+          local-cache: true
 
-      - name: Copy README.md & LICENSE
+      - name: Build Android
+        if: ${{ matrix.job.type=='WithCGO' && matrix.job.target=='android' }}
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
-          # mv -f resources/* build_assets
-          cp ${GITHUB_WORKSPACE}/README.md ./build_assets/README.md
-          cp ${GITHUB_WORKSPACE}/LICENSE ./build_assets/LICENSE
+          mkdir bin
+          CC=${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android33-clang
+          CGO_ENABLED=1 CC=${CC} GOARCH=arm64 GOOS=android go build -tags ${TAGS} -trimpath -ldflags "${LDFLAGS}" -o bin/${NAME}-android-arm64
 
-      - name: Create ZIP archive
+      - name: Set up xgo
+        if: ${{ matrix.job.type=='WithCGO' && matrix.job.target!='android' }}
+        run: |
+          docker pull techknowlogick/xgo:latest
+          go install src.techknowlogick.com/xgo@latest
+
+      - name: Build by xgo
+        if: ${{ matrix.job.type=='WithCGO' && matrix.job.target!='android' }}
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: |
+          mkdir bin
+          xgo --targets="${{ matrix.job.target }}" --tags="${TAGS}" -ldflags="${LDFLAGS}" --out bin/${NAME} ./
+
+      - name: Rename
+        if: ${{ matrix.job.type=='WithCGO' }}
+        run: |
+          cd bin
+          ls -la
+          cp ../.github/rename-cgo.sh ./
+          bash ./rename-cgo.sh
+          rm ./rename-cgo.sh
+          ls -la
+          cd ..
+
+      - name: Zip
+        if: ${{  success() }}
+        run: |
+          cd bin
+          ls -la
+          chmod +x *
+          cp ../.github/release.sh ./
+          bash ./release.sh
+          rm ./release.sh
+          ls -la
+          cd ..
+
+      - name: Save version
+        run: echo ${VERSION} > bin/version.txt
         shell: bash
-        run: |
-          pushd build_assets || exit 1
-          touch -mt $(date +%Y01010000) *
-          zip -9vr ../hiddify-libclash-${{ env.ASSET_NAME }}.zip .
-          popd || exit 1
-          FILE=./hiddify-libclash-${{ env.ASSET_NAME }}.zip
-          DGST=$FILE.dgst
-          for METHOD in {"md5","sha1","sha256","sha512"}
-          do
-            openssl dgst -$METHOD $FILE | sed 's/([^)]*)//g' >>$DGST
-          done
 
-      - name: Change the name
-        run: |
-          mv build_assets hiddify-libclash-${{ env.ASSET_NAME }}
-
-      - name: Upload files to Artifacts
-        uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v3
+        if: ${{  success() }}
         with:
-          name: hiddify-libclash-${{ env.ASSET_NAME }}
-          path: |
-            ./hiddify-libclash-${{ env.ASSET_NAME }}/*
+          name: artifact
+          path: bin/
 
-      - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
-        if: github.event_name == 'release'
+  Upload-Prerelease:
+    permissions: write-all
+    if: ${{ github.ref_type=='branch' }}
+    needs: [Build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./hiddify-libclash-${{ env.ASSET_NAME }}.zip*
-          tag: ${{ github.ref }}
-          file_glob: true
+          name: artifact
+          path: bin/
+
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: bin
+
+      - name: Delete current release assets
+        uses: 8Mi-Tech/delete-release-assets-action@main
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: Prerelease-${{ github.ref_name }}
+          deleteOnlyFromDrafts: false
+
+      - name: Set Env
+        run: |
+          echo "BUILDTIME=$(TZ=Asia/Shanghai date)" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Tag Repo
+        uses: richardsimko/update-tag@v1.0.6
+        with:
+          tag_name: Prerelease-${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: |
+          cat > release.txt << 'EOF'
+          Release created at  ${{ env.BUILDTIME }}
+          Synchronize ${{ github.ref_name }} branch code updates, keeping only the latest version
+          EOF
+
+      - name: Upload Prerelease
+        uses: softprops/action-gh-release@v1
+        if: ${{  success() }}
+        with:
+          tag_name: Prerelease-${{ github.ref_name }}
+          files: |
+            bin/*
+          prerelease: true
+          generate_release_notes: true
+          body_path: release.txt
+
+  Upload-Release:
+    permissions: write-all
+    if: ${{ github.ref_type=='tag' }}
+    needs: [Build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get tags
+        run: |
+          echo "CURRENTVERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          git fetch --tags
+          echo "PREVERSION=$(git describe --tags --abbrev=0 HEAD^)" >> $GITHUB_ENV
+
+      # - name: Generate release notes
+      #   run: |
+      #     cp ./.github/genReleaseNote.sh ./
+      #     bash ./genReleaseNote.sh -v ${PREVERSION}...${CURRENTVERSION}
+      #     rm ./genReleaseNote.sh
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: artifact
+          path: bin/
+
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: bin
+
+      - name: Upload Release
+        uses: softprops/action-gh-release@v1
+        if: ${{  success() }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: bin/*
+          generate_release_notes: true
+          # body_path: release.md
