@@ -3,7 +3,12 @@
 FILENAMES=$(ls)
 for FILENAME in $FILENAMES
 do
-	gzip -S ".gz" $FILENAME
+    if [[ ! ($FILENAME =~ ".exe1" || $FILENAME =~ ".sh")]];then
+        gzip -S ".gz" $FILENAME
+    elif [[ $FILENAME =~ ".exe1" ]];then
+        zip -m ${FILENAME%.*}.zip $FILENAME
+    else echo "skip $FILENAME"
+    fi
 done
 
 FILENAMES=$(ls)
