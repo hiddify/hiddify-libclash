@@ -12,9 +12,7 @@ VERSION=$(shell git rev-parse --short HEAD)
 endif
 
 BUILDTIME=$(shell date -u)
-GOBUILD=CGO_ENABLED=0 go build -tags with_gvisor,with_lwip -trimpath -ldflags '-X "github.com/Dreamacro/clash/constant.Version=$(VERSION)" \
-		-X "github.com/Dreamacro/clash/constant.BuildTime=$(BUILDTIME)" \
-		-w -s -buildid='
+GOBUILD=CGO_ENABLED=0 go build -tags with_gvisor,with_lwip -trimpath -ldflags '-w -s -buildid='
 
 PLATFORM_LIST = \
 	darwin-amd64 \
