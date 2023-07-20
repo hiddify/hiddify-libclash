@@ -72,7 +72,7 @@ jobs:
         # Include amd64 on all platforms.
         goos: [windows, freebsd, openbsd, linux, dragonfly, darwin]
         goarch: [amd64, 386]
-        ext: so
+        ext: [so]
         exclude:
           # Exclude i386 on darwin and dragonfly.
           - goarch: 386
@@ -84,7 +84,7 @@ jobs:
             ext: so
           - goos: windows
             ext: so
-            
+
         include:
           # BEIGIN MacOS ARM64
           - goos: darwin
