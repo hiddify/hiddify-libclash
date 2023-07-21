@@ -25,6 +25,14 @@ android-arm64:
 
 windows-amd64:
 	env GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-gcc $(GOBUILD) -o $(BINDIR)/$(NAME)-$@.dll
+windows-x86:
+	env GOOS=windows GOARCH=386 CC=x86_64-w64-mingw32-gcc $(GOBUILD) -o $(BINDIR)/$(NAME)-$@.dll
+
+linux-amd64:
+	env GOOS=linux GOARCH=amd64 CC=x86_64-w64-mingw32-gcc $(GOBUILD) -o $(BINDIR)/$(NAME)-$@.dll
+linux-x86:
+	env GOOS=linux GOARCH=386 CC=x86_64-w64-mingw32-gcc $(GOBUILD) -o $(BINDIR)/$(NAME)-$@.dll
+
 
 all:android-amd64 android-arm android-arm64 windows-amd64
 
