@@ -8,7 +8,7 @@ on:
       - ".github/ISSUE_TEMPLATE/**"
     tags:
       - "v*"
-      
+permissions: write-all      
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
   cancel-in-progress: true
