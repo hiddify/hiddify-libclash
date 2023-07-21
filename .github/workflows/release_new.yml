@@ -45,11 +45,17 @@ jobs:
           check-latest: true
 
       - name: Set up MinGW
-        if: ${{ matrix.job.target=='windows-amd64' || matrix.job.target=='windows-386' }}
+        if: startsWith(matrix.job.target,'windows')
         uses: egor-tensin/setup-mingw@v2
         with:
           platform: x64
-      
+
+      - name: Set up GCC
+        if: startsWith(matrix.job.target,'linux')
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: latest
+          platform: x64
       - uses: nttld/setup-ndk@v1
         if: ${{ matrix.job.target=='android' }}
         id: setup-ndk
