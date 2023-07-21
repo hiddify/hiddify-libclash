@@ -178,7 +178,7 @@ jobs:
           CGO_ENABLED=1 CC=${CC} GOARCH=arm GOARM=7 GOOS=android go build -tags ${TAGS} -trimpath -ldflags "${LDFLAGS}" -o bin/${NAME}-android-arm7
           
           CC=${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android21-clang
-          CGO_ENABLED=1 CC=${CC} GOARCH=amd64  GOOS=android go build -tags ${TAGS} -trimpath -ldflags "${LDFLAGS}" -o bin/${NAME}-android-amd4
+          CGO_ENABLED=1 CC=${CC} GOARCH=amd64  GOOS=android go build -tags ${TAGS} -trimpath -ldflags "${LDFLAGS}" -o bin/${NAME}-android-amd64
 
       - name: Build iOS
         if: ${{ matrix.job.type=='WithCGO' && matrix.job.target=='ios' }}
