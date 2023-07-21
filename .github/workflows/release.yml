@@ -187,11 +187,11 @@ jobs:
       - name: Build iOS
         if: ${{ matrix.job.type=='WithCGO' && matrix.job.target=='ios' }}
         run: |
-          go get golang.org/x/mobile/cmd/gomobile
-          export PATH=$PATH:$(go env GOPATH)/bin
-          gomobile init
-          gomobile bind -target=ios
-          ls -R
+          #go get golang.org/x/mobile/cmd/gomobile
+          #export PATH=$PATH:$(go env GOPATH)/bin
+          #gomobile init
+          #gomobile bind -target=ios
+          #ls -R
           mkdir -p bin
           CGO_ENABLED=1 GOARCH=arm64  GOOS=ios go build -tags ${TAGS} -trimpath -ldflags "${LDFLAGS}" -o bin/${NAME}-ios-arm64
           CGO_ENABLED=1 GOARCH=arm  GOOS=ios go build -tags ${TAGS} -trimpath -ldflags "${LDFLAGS}" -o bin/${NAME}-ios-arm7
