@@ -79,6 +79,7 @@ jobs:
         
       - name: zip
         run: |
+            rm ./bin/*.h
             gzip -r -S ".gz" ./bin/hiddify-clashlib*
 
 
