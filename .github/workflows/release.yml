@@ -152,8 +152,7 @@ jobs:
           NAME: hiddify_clashlib
           BINDIR: bin
         run: make -j$(($(nproc) + 1)) ${{ matrix.job.target }}
-      - uses: mxcl/xcodebuild@v1
-        if: ${{ matrix.job.type=='WithCGO' && matrix.job.target=='ios' }}
+      
       - uses: nttld/setup-ndk@v1
         if: ${{ matrix.job.type=='WithCGO' && matrix.job.target=='android' }}
         id: setup-ndk
@@ -179,6 +178,11 @@ jobs:
           CC=${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android21-clang
           CGO_ENABLED=1 CC=${CC} GOARCH=amd64  GOOS=android go build -tags ${TAGS} -trimpath -ldflags "${LDFLAGS}" -o bin/${NAME}-android-amd64
 
+      - name: Prepare iOS
+        uses: mxcl/xcodebuild@v1
+        if: ${{ matrix.job.type=='WithCGO' && matrix.job.target=='ios' }}
+        with:
+          action: build
       - name: Build iOS
         if: ${{ matrix.job.type=='WithCGO' && matrix.job.target=='ios' }}
         run: |
