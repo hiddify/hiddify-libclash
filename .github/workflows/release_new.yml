@@ -21,11 +21,11 @@ jobs:
       fail-fast: false
       matrix:
         job:
-          - { os: "ubuntu-latest", platform: "android"}
-          - { os: "ubuntu-latest", platform: "linux-386"}
-          - { os: "ubuntu-latest", platform: "linux-amd64"}
-          #- { os: "ubuntu-latest", platform: "windows-386"}
-          - { os: "ubuntu-latest", platform: "windows-amd64"}
+          - { os: "ubuntu-latest", target: "android"}
+          - { os: "ubuntu-latest", target: "linux-386"}
+          - { os: "ubuntu-latest", target: "linux-amd64"}
+          - { os: "ubuntu-latest", platform: "windows-386"}
+          - { os: "ubuntu-latest", target: "windows-amd64"}
           
 
     steps:
