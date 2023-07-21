@@ -30,7 +30,7 @@ do
         mv $FILENAME $FILENAME-linux-cgo.so
     elif [[ $FILENAME =~ "android" ]];then
         echo "rename android $FILENAME"
-        mv $FILENAME $FILENAME-android-$GOARCH-$GOARM-cgo.so
+        mv $FILENAME $FILENAME-cgo.so
     else echo "skip $FILENAME"
     fi
 done
