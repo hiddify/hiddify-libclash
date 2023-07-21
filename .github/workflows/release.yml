@@ -182,7 +182,8 @@ jobs:
         uses: mxcl/xcodebuild@v1
         if: ${{ matrix.job.type=='WithCGO' && matrix.job.target=='ios' }}
         with:
-          action: build
+          action: none
+          
       - name: Build iOS
         if: ${{ matrix.job.type=='WithCGO' && matrix.job.target=='ios' }}
         run: |
