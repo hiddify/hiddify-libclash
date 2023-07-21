@@ -59,7 +59,7 @@ jobs:
           version: latest
           platform: x64
       - uses: nttld/setup-ndk@v1
-        if: ${{ matrix.job.target=='android' }}
+        if: startsWith(matrix.job.target,'android')
         id: setup-ndk
         with:
           ndk-version: r25b
