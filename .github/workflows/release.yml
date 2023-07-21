@@ -85,10 +85,10 @@ jobs:
           #           - { type: "WithCGO", target: "android", id: "11", goos: "android", goarch: "arm", goarm: 7 }
           #           - { type: "WithCGO", target: "android", id: "11", goos: "android", goarch: "amd64" }
           - { type: "WithCGO", target: "windows/*", id: "1", os: 'ubuntu-latest'}
-          - { type: "WithCGO", target: "linux/*", id: "2", os: 'ubuntu-latest'}
-          #           - { type: "WithCGO", target: "linux/amd64", id: "3", goos: "linux", goarch: "amd64"  }
-          #           - { type: "WithCGO", target: "linux/arm64,linux/riscv64", id: "4", goos: "linux", goarch: "arm64" }
-          #           - { type: "WithCGO", target: "linux/arm,", id: "5", goos: "linux", goarch: "arm" }
+          - { type: "WithCGO", target: "linux/386", id: "2", os: 'ubuntu-latest'}
+          - { type: "WithCGO", target: "linux/amd64", id: "3", os: 'ubuntu-latest' }
+          - { type: "WithCGO", target: "linux/arm64,linux/riscv64", id: "4", os: 'ubuntu-latest'}
+#           - { type: "WithCGO", target: "linux/arm,", id: "5", goos: "linux", goarch: "arm" }
           #           - { type: "WithCGO", target: "linux/arm-6,linux/arm-7", id: "6" }
           #           - { type: "WithCGO", target: "linux/mips,linux/mipsle", id: "7" }
           #           - { type: "WithCGO", target: "linux/mips64", id: "8" }
