@@ -29,9 +29,9 @@ windows-386:
 	env GOOS=windows GOARCH=386 CC=x86_64-w64-mingw32-gcc $(GOBUILD) -o $(BINDIR)/$(NAME)-$@.dll
 
 linux-amd64:
-	env GOOS=linux GOARCH=amd64  $(GOBUILD) -o $(BINDIR)/$(NAME)-$@.dll
+	env GOOS=linux GOARCH=amd64  $(GOBUILD) -o $(BINDIR)/$(NAME)-$@.so
 linux-386:
-	env GOOS=linux GOARCH=386  $(GOBUILD) -o $(BINDIR)/$(NAME)-$@.dll
+	env GOOS=linux GOARCH=386  $(GOBUILD) -o $(BINDIR)/$(NAME)-$@.so
 
 
 all:android-amd64 android-arm android-arm64 windows-amd64
