@@ -69,17 +69,35 @@ jobs:
           #     target: "darwin-amd64 darwin-arm64 android-arm64",
           #     id: "9",
           #   }
-          - { type: "WithCGO", target: "windows/*", id: "1" }
-          - { type: "WithCGO", target: "linux/386", id: "2" }
-          - { type: "WithCGO", target: "linux/amd64", id: "3" }
-          - { type: "WithCGO", target: "linux/arm64,linux/riscv64", id: "4" }
-          - { type: "WithCGO", target: "linux/arm,", id: "5" }
-          - { type: "WithCGO", target: "linux/arm-6,linux/arm-7", id: "6" }
-          - { type: "WithCGO", target: "linux/mips,linux/mipsle", id: "7" }
-          - { type: "WithCGO", target: "linux/mips64", id: "8" }
-          - { type: "WithCGO", target: "linux/mips64le", id: "9" }
-          - { type: "WithCGO", target: "darwin-10.16/*", id: "10" }
-          - { type: "WithCGO", target: "android", id: "11" }
+#           - { type: "WithCGO", target: "windows", id: "1", goos: "windows", goarch: "amd64" }
+#           - { type: "WithCGO", target: "windows", id: "1", goos: "windows", goarch: "386" }
+#           - { type: "WithCGO", target: "linux/386", id: "2", goos: "linux", goarch: "386" }
+#           - { type: "WithCGO", target: "linux/amd64", id: "3", goos: "linux", goarch: "amd64"  }
+#           - { type: "WithCGO", target: "linux/arm64,linux/riscv64", id: "4", goos: "linux", goarch: "arm64" }
+#           - { type: "WithCGO", target: "linux/arm,", id: "5", goos: "linux", goarch: "arm" }
+#           - { type: "WithCGO", target: "linux/arm-6,linux/arm-7", id: "6", goos: "linux", goarch: "arm" }
+# #           - { type: "WithCGO", target: "linux/mips,linux/mipsle", id: "7" }
+# #           - { type: "WithCGO", target: "linux/mips64", id: "8" }
+# #           - { type: "WithCGO", target: "linux/mips64le", id: "9" }
+#           - { type: "WithCGO", target: "darwin-10.16/*", id: "10", goos: "darwin", goarch: "amd64" }
+#           - { type: "WithCGO", target: "darwin-10.16/*", id: "10", goos: "darwin", goarch: "arm64" }
+#           - { type: "WithCGO", target: "android", id: "11", goos: "android", goarch: "arm64", goarm: 8 }
+#           - { type: "WithCGO", target: "android", id: "11", goos: "android", goarch: "arm", goarm: 7 }
+#           - { type: "WithCGO", target: "android", id: "11", goos: "android", goarch: "amd64" }
+          
+          - { type: "WithCGO", target: "windows/*", id: "1"}
+          - { type: "WithCGO", target: "linux/*", id: "2"}
+#           - { type: "WithCGO", target: "linux/amd64", id: "3", goos: "linux", goarch: "amd64"  }
+#           - { type: "WithCGO", target: "linux/arm64,linux/riscv64", id: "4", goos: "linux", goarch: "arm64" }
+#           - { type: "WithCGO", target: "linux/arm,", id: "5", goos: "linux", goarch: "arm" }
+#           - { type: "WithCGO", target: "linux/arm-6,linux/arm-7", id: "6" }
+#           - { type: "WithCGO", target: "linux/mips,linux/mipsle", id: "7" }
+#           - { type: "WithCGO", target: "linux/mips64", id: "8" }
+#           - { type: "WithCGO", target: "linux/mips64le", id: "9" }
+          - { type: "WithCGO", target: "darwin/*", id: "10"}
+          - { type: "WithCGO", target: "android", id: "11", goos: "android", goarch: "arm64", goarm: 8 }
+          - { type: "WithCGO", target: "android", id: "11", goos: "android", goarch: "arm", goarm: 7 }
+          - { type: "WithCGO", target: "android", id: "11", goos: "android", goarch: "amd64" }
 
     steps:
       - name: Check out code into the Go module directory
@@ -153,7 +171,7 @@ jobs:
         run: |
           mkdir bin
           CC=${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android33-clang
-          CGO_ENABLED=1 CC=${CC} GOARCH=arm64 GOOS=android go build -tags ${TAGS} -trimpath -ldflags "${LDFLAGS}" -o bin/${NAME}-android-arm64
+          CGO_ENABLED=1 CC=${CC} GOARCH=${{ matrix.job.goarch }} GOARM=${{ matrix.job.goarm }} GOOS=android go build -tags ${TAGS} -trimpath -ldflags "${LDFLAGS}" -o bin/${NAME}-android-arm64
 
       - name: Set up xgo
         if: ${{ matrix.job.type=='WithCGO' && matrix.job.target!='android' }}
@@ -167,7 +185,7 @@ jobs:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
           mkdir bin
-          xgo --targets="${{ matrix.job.target }}" --tags="${TAGS}" -ldflags="${LDFLAGS}" --out bin/${NAME} ./
+          xgo GOARCH=${{ matrix.job.goarch }} --targets="${{ matrix.job.target }}" --tags="${TAGS}" -ldflags="${LDFLAGS}" --out bin/${NAME} ./
 
       - name: Rename
         if: ${{ matrix.job.type=='WithCGO' }}
