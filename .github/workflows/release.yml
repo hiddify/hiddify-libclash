@@ -122,7 +122,6 @@ jobs:
 
       - name: Set ENV
         run: |
-          sudo timedatectl set-timezone "Asia/Shanghai"
           echo "NAME=hiddify_clashlib" >> $GITHUB_ENV
           echo "REPO=${{ github.repository }}" >> $GITHUB_ENV
           echo "ShortSHA=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_ENV
@@ -201,7 +200,7 @@ jobs:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
           mkdir bin
-          xgo GOARCH=${{ matrix.job.goarch }} --targets="${{ matrix.job.target }}" --tags="${TAGS}" -ldflags="${LDFLAGS}" --out bin/${NAME} ./
+          xgo --targets="${{ matrix.job.target }}" --tags="${TAGS}" -ldflags="${LDFLAGS}" --out bin/${NAME} ./
 
       - name: Rename
         if: ${{ matrix.job.type=='WithCGO' }}
