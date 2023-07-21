@@ -4,16 +4,16 @@ FILENAMES=$(ls)
 ls
 for FILENAME in $FILENAMES
 do
-    if [[ $FILENAME =~ "darwin*-arm64" ]];then
+    if [[ $FILENAME =~ "darwin-10.12-arm64" ]];then
         echo "rename darwin-arm64 $FILENAME"
         mv $FILENAME hiddify_clashlib-darwin-arm64-cgo.dylib
-    elif [[ $FILENAME =~ "darwin*-amd64" ]];then
+    elif [[ $FILENAME =~ "darwin-10.12-amd64" ]];then
         echo "rename darwin-amd64 $FILENAME"
         mv $FILENAME hiddify_clashlib-darwin-amd64-cgo.dylib
-    elif [[ $FILENAME =~ "windows*-386" ]];then
+    elif [[ $FILENAME =~ "windows-4.0-386" ]];then
         echo "rename windows 386 $FILENAME"
         mv $FILENAME hiddify_clashlib-windows-386-cgo.dll
-    elif [[ $FILENAME =~ "windows*-amd64" ]];then
+    elif [[ $FILENAME =~ "windows-4.0-amd64" ]];then
         echo "rename windows amd64 $FILENAME"
         mv $FILENAME hiddify_clashlib-windows-amd64-cgo.dll
     elif [[ $FILENAME =~ "hiddify_clashlib-linux-arm-5" ]];then
