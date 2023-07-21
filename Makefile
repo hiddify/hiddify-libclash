@@ -12,7 +12,7 @@ VERSION=$(shell git rev-parse --short HEAD)
 endif
 
 BUILDTIME=$(shell date -u)
-GOBUILD=CGO_ENABLED=0 go build -tags with_gvisor,with_lwip -trimpath -ldflags '-w -s -buildid='
+GOBUILD=CGO_ENABLED=1 go build -tags with_gvisor,with_lwip -trimpath -ldflags '-w -s -buildid='
 
 PLATFORM_LIST = \
 	darwin-amd64 \
