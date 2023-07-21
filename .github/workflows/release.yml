@@ -23,7 +23,7 @@ env:
 jobs:
   Build:
     permissions: write-all
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.job.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -69,35 +69,33 @@ jobs:
           #     target: "darwin-amd64 darwin-arm64 android-arm64",
           #     id: "9",
           #   }
-#           - { type: "WithCGO", target: "windows", id: "1", goos: "windows", goarch: "amd64" }
-#           - { type: "WithCGO", target: "windows", id: "1", goos: "windows", goarch: "386" }
-#           - { type: "WithCGO", target: "linux/386", id: "2", goos: "linux", goarch: "386" }
-#           - { type: "WithCGO", target: "linux/amd64", id: "3", goos: "linux", goarch: "amd64"  }
-#           - { type: "WithCGO", target: "linux/arm64,linux/riscv64", id: "4", goos: "linux", goarch: "arm64" }
-#           - { type: "WithCGO", target: "linux/arm,", id: "5", goos: "linux", goarch: "arm" }
-#           - { type: "WithCGO", target: "linux/arm-6,linux/arm-7", id: "6", goos: "linux", goarch: "arm" }
-# #           - { type: "WithCGO", target: "linux/mips,linux/mipsle", id: "7" }
-# #           - { type: "WithCGO", target: "linux/mips64", id: "8" }
-# #           - { type: "WithCGO", target: "linux/mips64le", id: "9" }
-#           - { type: "WithCGO", target: "darwin-10.16/*", id: "10", goos: "darwin", goarch: "amd64" }
-#           - { type: "WithCGO", target: "darwin-10.16/*", id: "10", goos: "darwin", goarch: "arm64" }
-#           - { type: "WithCGO", target: "android", id: "11", goos: "android", goarch: "arm64", goarm: 8 }
-#           - { type: "WithCGO", target: "android", id: "11", goos: "android", goarch: "arm", goarm: 7 }
-#           - { type: "WithCGO", target: "android", id: "11", goos: "android", goarch: "amd64" }
-          
-          - { type: "WithCGO", target: "windows/*", id: "1"}
-          - { type: "WithCGO", target: "linux/*", id: "2"}
-#           - { type: "WithCGO", target: "linux/amd64", id: "3", goos: "linux", goarch: "amd64"  }
-#           - { type: "WithCGO", target: "linux/arm64,linux/riscv64", id: "4", goos: "linux", goarch: "arm64" }
-#           - { type: "WithCGO", target: "linux/arm,", id: "5", goos: "linux", goarch: "arm" }
-#           - { type: "WithCGO", target: "linux/arm-6,linux/arm-7", id: "6" }
-#           - { type: "WithCGO", target: "linux/mips,linux/mipsle", id: "7" }
-#           - { type: "WithCGO", target: "linux/mips64", id: "8" }
-#           - { type: "WithCGO", target: "linux/mips64le", id: "9" }
-          - { type: "WithCGO", target: "darwin/*", id: "10"}
-          - { type: "WithCGO", target: "android", id: "11", goos: "android", goarch: "arm64", goarm: 8 }
-          - { type: "WithCGO", target: "android", id: "11", goos: "android", goarch: "arm", goarm: 7 }
-          - { type: "WithCGO", target: "android", id: "11", goos: "android", goarch: "amd64" }
+          #           - { type: "WithCGO", target: "windows", id: "1", goos: "windows", goarch: "amd64" }
+          #           - { type: "WithCGO", target: "windows", id: "1", goos: "windows", goarch: "386" }
+          #           - { type: "WithCGO", target: "linux/386", id: "2", goos: "linux", goarch: "386" }
+          #           - { type: "WithCGO", target: "linux/amd64", id: "3", goos: "linux", goarch: "amd64"  }
+          #           - { type: "WithCGO", target: "linux/arm64,linux/riscv64", id: "4", goos: "linux", goarch: "arm64" }
+          #           - { type: "WithCGO", target: "linux/arm,", id: "5", goos: "linux", goarch: "arm" }
+          #           - { type: "WithCGO", target: "linux/arm-6,linux/arm-7", id: "6", goos: "linux", goarch: "arm" }
+          # #           - { type: "WithCGO", target: "linux/mips,linux/mipsle", id: "7" }
+          # #           - { type: "WithCGO", target: "linux/mips64", id: "8" }
+          # #           - { type: "WithCGO", target: "linux/mips64le", id: "9" }
+          #           - { type: "WithCGO", target: "darwin-10.16/*", id: "10", goos: "darwin", goarch: "amd64" }
+          #           - { type: "WithCGO", target: "darwin-10.16/*", id: "10", goos: "darwin", goarch: "arm64" }
+          #           - { type: "WithCGO", target: "android", id: "11", goos: "android", goarch: "arm64", goarm: 8 }
+          #           - { type: "WithCGO", target: "android", id: "11", goos: "android", goarch: "arm", goarm: 7 }
+          #           - { type: "WithCGO", target: "android", id: "11", goos: "android", goarch: "amd64" }
+          - { type: "WithCGO", target: "windows/*", id: "1", os: 'ubuntu-latest'}
+          - { type: "WithCGO", target: "linux/*", id: "2", os: 'ubuntu-latest'}
+          #           - { type: "WithCGO", target: "linux/amd64", id: "3", goos: "linux", goarch: "amd64"  }
+          #           - { type: "WithCGO", target: "linux/arm64,linux/riscv64", id: "4", goos: "linux", goarch: "arm64" }
+          #           - { type: "WithCGO", target: "linux/arm,", id: "5", goos: "linux", goarch: "arm" }
+          #           - { type: "WithCGO", target: "linux/arm-6,linux/arm-7", id: "6" }
+          #           - { type: "WithCGO", target: "linux/mips,linux/mipsle", id: "7" }
+          #           - { type: "WithCGO", target: "linux/mips64", id: "8" }
+          #           - { type: "WithCGO", target: "linux/mips64le", id: "9" }
+          - { type: "WithCGO", target: "darwin/*", id: "10", os: 'ubuntu-latest'}
+          - { type: "WithCGO", target: "android", id: "11", os: 'ubuntu-latest' }
+          - { type: "WithCGO", target: "ios", id: "12", os: 'macos-latest' }
 
     steps:
       - name: Check out code into the Go module directory
@@ -137,7 +135,7 @@ jobs:
           echo "TAGS=with_gvisor,with_lwip" >> $GITHUB_ENV
           echo "LDFLAGS= -w -s -buildid=" >> $GITHUB_ENV
         shell: bash
-
+      
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
@@ -155,7 +153,8 @@ jobs:
           NAME: hiddify_clashlib
           BINDIR: bin
         run: make -j$(($(nproc) + 1)) ${{ matrix.job.target }}
-
+      - uses: mxcl/xcodebuild@v1
+        if: ${{ matrix.job.type=='WithCGO' && matrix.job.target=='ios' }}
       - uses: nttld/setup-ndk@v1
         if: ${{ matrix.job.type=='WithCGO' && matrix.job.target=='android' }}
         id: setup-ndk
@@ -163,7 +162,9 @@ jobs:
           ndk-version: r25b
           add-to-path: false
           local-cache: true
-
+      
+ 
+          
       - name: Build Android
         if: ${{ matrix.job.type=='WithCGO' && matrix.job.target=='android' }}
         env:
@@ -171,16 +172,31 @@ jobs:
         run: |
           mkdir bin
           CC=${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android33-clang
-          CGO_ENABLED=1 CC=${CC} GOARCH=${{ matrix.job.goarch }} GOARM=${{ matrix.job.goarm }} GOOS=android go build -tags ${TAGS} -trimpath -ldflags "${LDFLAGS}" -o bin/${NAME}-android-arm64
+          CGO_ENABLED=1 CC=${CC} GOARCH=arm64  GOOS=android go build -tags ${TAGS} -trimpath -ldflags "${LDFLAGS}" -o bin/${NAME}-android-arm64
+          
+          CC=${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi21-clang
+          CGO_ENABLED=1 CC=${CC} GOARCH=arm GOARM=7 GOOS=android go build -tags ${TAGS} -trimpath -ldflags "${LDFLAGS}" -o bin/${NAME}-android-arm7
+          
+          CC=${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android21-clang
+          CGO_ENABLED=1 CC=${CC} GOARCH=amd64  GOOS=android go build -tags ${TAGS} -trimpath -ldflags "${LDFLAGS}" -o bin/${NAME}-android-amd4
+
+      - name: Build iOS
+        if: ${{ matrix.job.type=='WithCGO' && matrix.job.target=='ios' }}
+        run: |
+          mkdir bin
+          CGO_ENABLED=1 GOARCH=arm64  GOOS=ios go build -tags ${TAGS} -trimpath -ldflags "${LDFLAGS}" -o bin/${NAME}-ios-arm64
+          CGO_ENABLED=1 GOARCH=arm  GOOS=ios go build -tags ${TAGS} -trimpath -ldflags "${LDFLAGS}" -o bin/${NAME}-ios-arm7
+          
+
 
       - name: Set up xgo
-        if: ${{ matrix.job.type=='WithCGO' && matrix.job.target!='android' }}
+        if: ${{ matrix.job.type=='WithCGO' && matrix.job.target!='android' && matrix.job.target!='ios' }}
         run: |
           docker pull techknowlogick/xgo:latest
           go install src.techknowlogick.com/xgo@latest
 
       - name: Build by xgo
-        if: ${{ matrix.job.type=='WithCGO' && matrix.job.target!='android' }}
+        if: ${{ matrix.job.type=='WithCGO' && matrix.job.target!='android' && matrix.job.target!='ios' }}
         env:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
@@ -220,6 +236,11 @@ jobs:
           name: artifact
           path: bin/
 
+
+
+      
+      
+      
   Upload-Prerelease:
     permissions: write-all
     if: ${{ github.ref_type=='branch' }}
