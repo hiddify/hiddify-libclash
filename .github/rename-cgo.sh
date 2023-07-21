@@ -1,18 +1,19 @@
 #!/bin/bash
 
 FILENAMES=$(ls)
+ls
 for FILENAME in $FILENAMES
 do
-    if [[ $FILENAME =~ "darwin-10.16-arm64" ]];then
-        echo "rename darwin-10.16-arm64 $FILENAME"
+    if [[ $FILENAME =~ "darwin*-arm64" ]];then
+        echo "rename darwin-arm64 $FILENAME"
         mv $FILENAME hiddify_clashlib-darwin-arm64-cgo.dylib
-    elif [[ $FILENAME =~ "darwin-10.16-amd64" ]];then
-        echo "rename darwin-10.16-amd64 $FILENAME"
+    elif [[ $FILENAME =~ "darwin*-amd64" ]];then
+        echo "rename darwin-amd64 $FILENAME"
         mv $FILENAME hiddify_clashlib-darwin-amd64-cgo.dylib
-    elif [[ $FILENAME =~ "windows-4.0-386" ]];then
+    elif [[ $FILENAME =~ "windows*-386" ]];then
         echo "rename windows 386 $FILENAME"
         mv $FILENAME hiddify_clashlib-windows-386-cgo.dll
-    elif [[ $FILENAME =~ "windows-4.0-amd64" ]];then
+    elif [[ $FILENAME =~ "windows*-amd64" ]];then
         echo "rename windows amd64 $FILENAME"
         mv $FILENAME hiddify_clashlib-windows-amd64-cgo.dll
     elif [[ $FILENAME =~ "hiddify_clashlib-linux-arm-5" ]];then
@@ -26,10 +27,10 @@ do
         mv $FILENAME hiddify_clashlib-linux-armv7-cgo.so
     elif [[ $FILENAME =~ "linux" ]];then
         echo "rename linux $FILENAME"
-        mv $FILENAME $FILENAME-cgo.so
+        mv $FILENAME $FILENAME-linux-cgo.so
     elif [[ $FILENAME =~ "android" ]];then
         echo "rename android $FILENAME"
-        mv $FILENAME $FILENAME-cgo.so
+        mv $FILENAME $FILENAME-android-$GOARCH-$GOARM-cgo.so
     else echo "skip $FILENAME"
     fi
 done
