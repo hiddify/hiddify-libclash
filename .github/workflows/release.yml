@@ -95,7 +95,7 @@ jobs:
           #           - { type: "WithCGO", target: "linux/mips64le", id: "9" }
           - { type: "WithCGO", target: "darwin/*", id: "10", os: 'ubuntu-latest'}
           - { type: "WithCGO", target: "android", id: "11", os: 'ubuntu-latest' }
-          - { type: "WithCGO", target: "ios", id: "12", os: 'macos-latest' }
+#           - { type: "WithCGO", target: "ios", id: "12", os: 'macos-latest' }
 
     steps:
       - name: Check out code into the Go module directory
