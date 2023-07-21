@@ -24,10 +24,10 @@ jobs:
           - { os: "ubuntu-latest", target: "android-arm64"}
           - { os: "ubuntu-latest", target: "android-amd64"}
           - { os: "ubuntu-latest", target: "android-arm"}
-          - { os: "ubuntu-latest", target: "linux-386"}
-          - { os: "ubuntu-latest", target: "linux-amd64"}
-          - { os: "ubuntu-latest", target: "windows-386"}
-          - { os: "ubuntu-latest", target: "windows-amd64"}
+          - { os: "ubuntu-latest", target: "linux-386", aarch: 'x86'}
+          - { os: "ubuntu-latest", target: "linux-amd64", aarch: 'x64'}
+          - { os: "ubuntu-latest", target: "windows-386", aarch: 'x86'}
+          - { os: "ubuntu-latest", target: "windows-amd64", aarch: 'x64' }
           
 
     steps:
@@ -50,14 +50,14 @@ jobs:
         if: startsWith(matrix.job.target,'windows')
         uses: egor-tensin/setup-mingw@v2
         with:
-          platform: x64
+          platform: ${{ matrix.job.aarch }}
 
       - name: Set up GCC
         if: startsWith(matrix.job.target,'linux')
         uses: egor-tensin/setup-gcc@v1
         with:
           version: latest
-          platform: x64
+          platform: ${{ matrix.job.aarch }}
           
       - name: gcc
         if: startsWith(matrix.job.target,'linux')
