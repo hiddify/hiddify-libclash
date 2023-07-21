@@ -35,6 +35,7 @@ linux-x86:
 
 
 all:android-amd64 android-arm android-arm64 windows-amd64
+android:android-amd64 android-arm android-arm64
 
 gz_releases=$(addsuffix .gz, $(all))
 
