@@ -8,8 +8,7 @@ on:
       - ".github/ISSUE_TEMPLATE/**"
     branches:
       - Alpha
-    tags:
-      - "v*"
+
   pull_request_target:
     branches:
       - Alpha
