@@ -21,7 +21,9 @@ jobs:
       fail-fast: false
       matrix:
         job:
-          - { os: "ubuntu-latest", target: "android"}
+          - { os: "ubuntu-latest", target: "android-arm64"}
+          - { os: "ubuntu-latest", target: "android-amd64"}
+          - { os: "ubuntu-latest", target: "android-arm"}
           - { os: "ubuntu-latest", target: "linux-386"}
           - { os: "ubuntu-latest", target: "linux-amd64"}
           - { os: "ubuntu-latest", platform: "windows-386"}
@@ -68,7 +70,11 @@ jobs:
           
       - name: Build 
         run: make -j$(($(nproc) + 1)) ${{ matrix.job.target }}
-  
+        
+      - name: zip
+        run: |
+            gzip -r -S ".gz" ./bin/hiddify-clashlib*
+
 
       - name: Save version
         run: echo ${VERSION} > bin/version.txt
