@@ -53,7 +53,12 @@ jobs:
         uses: egor-tensin/setup-mingw@v2
         with:
           platform: ${{ matrix.job.aarch }}
-      
+          
+      - name: Set up macos
+        if: startsWith(matrix.job.target,'macos')
+        run: |
+          brew install create-dmg tree coreutils
+          
       - name: Set up GCC
         if: startsWith(matrix.job.target,'linux')
         uses: egor-tensin/setup-gcc@v1
@@ -81,7 +86,8 @@ jobs:
         
       - name: zip
         run: |
-            rm ./bin/*.h
+            tree
+            rm -f ./bin/*.h
             gzip -r -S ".gz" ./bin/hiddify-clashlib*
 
 
