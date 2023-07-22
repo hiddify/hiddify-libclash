@@ -21,14 +21,14 @@ jobs:
       fail-fast: false
       matrix:
         job:
-#           - { os: "ubuntu-latest", target: "android-arm64"}
-#           - { os: "ubuntu-latest", target: "android-amd64"}
-#           - { os: "ubuntu-latest", target: "android-arm"}
-#           - { os: "ubuntu-latest", target: "linux-386", aarch: 'x86'}
-#           - { os: "ubuntu-latest", target: "linux-amd64", aarch: 'x64'}
-#           - { os: "ubuntu-latest", target: "windows-386", aarch: 'x86'}
-#           - { os: "ubuntu-latest", target: "windows-amd64", aarch: 'x64' }
-          - { os: "macos-11", target: "macos-amd64", aarch: 'amd64' }
+          - { os: "ubuntu-latest", target: "android-arm64"}
+          - { os: "ubuntu-latest", target: "android-amd64"}
+          - { os: "ubuntu-latest", target: "android-arm"}
+          - { os: "ubuntu-latest", target: "linux-386", aarch: 'x86'}
+          - { os: "ubuntu-latest", target: "linux-amd64", aarch: 'x64'}
+          - { os: "ubuntu-latest", target: "windows-386", aarch: 'x86'}
+          - { os: "ubuntu-latest", target: "windows-amd64", aarch: 'x64' }
+#           - { os: "macos-11", target: "macos-amd64", aarch: 'amd64' }
 #           - { os: "macos-11", target: "macos-arm64", aarch: 'arm64' }
           
 
