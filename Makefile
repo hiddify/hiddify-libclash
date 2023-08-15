@@ -1,4 +1,4 @@
-NAME=hiddify-clashlib
+nNAME=hiddify-clashlib
 BINDIR=bin
 BRANCH=$(shell git branch --show-current)
 ifeq ($(BRANCH),Alpha)
@@ -32,10 +32,11 @@ linux-amd64:
 	env GOOS=linux GOARCH=amd64  $(GOBUILD) -o $(BINDIR)/$(NAME)-$@.so
 linux-386:
 	env GOOS=linux GOARCH=386  $(GOBUILD) -o $(BINDIR)/$(NAME)-$@.so
+
 macos-amd64:
-        GOOS=darwin  GOARCH=amd64 CGO_CFLAGS="-mmacosx-version-min=10.11" CGO_LDFLAGS="-mmacosx-version-min=10.11" CGO_ENABLED=1 go build -trimpath -tags with_gvisor,with_lwip -buildmode=c-shared -o $(BINDIR)/$(NAME)-$@.dylib
+        env GOOS=darwin  GOARCH=amd64 CGO_CFLAGS="-mmacosx-version-min=10.11" CGO_LDFLAGS="-mmacosx-version-min=10.11" CGO_ENABLED=1 go build -trimpath -tags with_gvisor,with_lwip -buildmode=c-shared -o $(BINDIR)/$(NAME)-$@.dylib
 macos-arm64:
-        GOOS=darwin GOARCH=arm64 CGO_CFLAGS="-mmacosx-version-min=10.11" CGO_LDFLAGS="-mmacosx-version-min=10.11" CGO_ENABLED=1 go build -trimpath -tags with_gvisor,with_lwip -buildmode=c-shared -o $(BINDIR)/$(NAME)-$@.dylib
+        env GOOS=darwin GOARCH=arm64 CGO_CFLAGS="-mmacosx-version-min=10.11" CGO_LDFLAGS="-mmacosx-version-min=10.11" CGO_ENABLED=1 go build -trimpath -tags with_gvisor,with_lwip -buildmode=c-shared -o $(BINDIR)/$(NAME)-$@.dylib
 
 
 all:android-amd64 android-arm android-arm64 windows-amd64
